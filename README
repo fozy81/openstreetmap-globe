@@ -1,6 +1,6 @@
 The aim of this repo is to produce a 'cut out and keep' globe based on OpenStreetMap data.
 
-The repo contains a topojson file of openstreetmap land polygons and html file with links to D3.js libraries to project the map in a 'ginrgery' projections.
+The repo contains a topojson file of openstreetmap land polygons and html file with links to D3.js libraries to project the map in a 'gingery' projections.
 
 All credit goes to Michael Bostock and Jason Davies for the excellent https://github.com/d3/d3-geo-projection library and of course to the OpenStreetMap contributors.
 
