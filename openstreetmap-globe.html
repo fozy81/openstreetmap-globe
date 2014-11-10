@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  background: #fcfcfa;
+}
+
+.stroke {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3px;
+}
+
+.fill {
+  fill: #2ECCFA;
+}
+
+.graticule {
+  fill: none;
+  stroke: #777;
+  stroke-width: .5px;
+  stroke-opacity: .5;
+}
+
+.simpleworld2 {
+  fill: #dbbc51;
+  stroke: #000;
+  stroke-width: .5px;
+  stroke-linejoin: round;
+}
+
+.boundary {
+  fill: none;
+  stroke: #fff;
+  stroke-width: .5px;
+}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="gingery.js"></script>
+<script src="http://d3js.org/d3.geo.projection.v0.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script>
+
+var π = Math.PI;
+
+var width = 1350,
+    height = width * Math.cos(π / 6);
+
+var origin = [-4, 56];
+
+var projection = d3.geo.gingery()
+    .rotate([-origin[0], -origin[1]])
+    .radius(30)
+    .clipAngle(180 - 1e-3)
+    .translate([width / 2, height / 2])
+    .scale(width / (2 * Math.PI))
+    .precision(.1);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var graticule = d3.geo.graticule();
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var defs = svg.append("defs");
+
+defs.append("path")
+    .datum({type: "Sphere"})
+    .attr("id", "sphere")
+    .attr("d", path);
+
+defs.append("clipPath")
+    .attr("id", "clip")
+  .append("use")
+    .attr("xlink:href", "#sphere");
+
+svg.append("use")
+    .attr("class", "stroke")
+    .attr("xlink:href", "#sphere");
+
+svg.append("use")
+    .attr("class", "fill")
+    .attr("xlink:href", "#sphere");
+
+svg.append("path")
+    .datum(graticule)
+    .attr("class", "graticule")
+    .attr("clip-path", "url(#clip)")
+    .attr("d", path);
+
+d3.json("output2.json", function(error, world) {
+     if (error) return console.error(error);
+  svg.insert("path", ".graticule")
+      .datum(topojson.feature(world, world.objects.simpleworld2))
+      .attr("class", "simpleworld2")
+      .attr("clip-path", "url(#clip)")
+      .attr("d", path);
+
+  svg.insert("path", ".graticule")
+      .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+      .attr("class", "boundary")
+      .attr("clip-path", "url(#clip)")
+      .attr("d", path);
+});
+
+d3.select(self.frameElement).style("height", height + "px");
+
+</script>
+
